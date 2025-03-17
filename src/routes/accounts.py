@@ -226,6 +226,7 @@ async def password_reset_complete(
             detail="An error occurred while resetting the password."
         )
 
+
 @router.post(
     "/login/",
     response_model=UserLoginResponseSchema,
