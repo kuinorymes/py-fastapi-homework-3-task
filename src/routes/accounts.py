@@ -208,7 +208,8 @@ async def password_reset_complete(
                 detail="Invalid email or token."
             )
 
-        user.password = request_data.password
+        user._hashed_password = hash_password(request_data.password)
+
         await db.execute(
             delete(PasswordResetTokenModel).where(
                 PasswordResetTokenModel.id == reset_token.id
@@ -224,7 +225,6 @@ async def password_reset_complete(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while resetting the password."
         )
-
 
 @router.post(
     "/login/",
@@ -262,6 +262,8 @@ async def login_user(
         refresh_token = jwt_manager.create_refresh_token(
             data={"user_id": user.id}
         )
+
+        settings.LOGIN_TIME_DAYS
 
         refresh_token_record = RefreshTokenModel.create(
             user_id=user.id,
